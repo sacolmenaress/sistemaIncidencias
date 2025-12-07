@@ -131,7 +131,6 @@ function UserSidebar({ currentView, setView }: UserSidebarProps) {
 }
 
 
-// COMPONENTE: FORMULARIO DE REPORTE 
 interface NewTicketData {
   title: string;
   description: string;
@@ -151,14 +150,12 @@ function ReportTicketForm({ onTicketCreated }: { onTicketCreated: () => void }) 
     setSuccess(null);
 
     try {
-      // LLAMADA CLAVE: POST /api/v1/tickets (Creación de Ticket Automática)
       await api.post('/tickets', data);
       
       setSuccess('¡Incidencia reportada con éxito! Su ticket ha sido registrado automáticamente.');
-      // Resetea el formulario después de 1 segundo para mostrar el mensaje de éxito
       setTimeout(() => {
         setData({ title: '', description: '', priority: 'media' });
-        onTicketCreated(); // Dispara la recarga del historial y cambia la vista
+        onTicketCreated(); 
       }, 7000);
       
     } catch (err) {
@@ -242,7 +239,7 @@ function UserTicketsHistory({ refreshKey }: { refreshKey: number }) {
     if (!selectedTicket) return;
     try {
       await api.put(`/tickets/${selectedTicket.id}`, updatedTicket);
-      fetchTickets(); // Recargar la lista
+      fetchTickets(); 
     } catch (err) {
       console.error('Error al actualizar ticket:', err);
     }
@@ -252,13 +249,12 @@ function UserTicketsHistory({ refreshKey }: { refreshKey: number }) {
     setIsLoading(true);
     setError(null);
     try {
-      // LLAMADA CLAVE: GET /api/v1/tickets/me (Historial del Usuario)
       const data = await api.get('/tickets/me');
-      console.log('API Response for /tickets/me:', data); // Para depuración
+      console.log('API Response for /tickets/me:', data); 
       const tickets = Array.isArray(data) ? data : data.tickets || [];
       setTickets(tickets);
     } catch (err) {
-      console.error('Error fetching tickets:', err); // Para depuración
+      console.error('Error fetching tickets:', err); 
       setError('Error al cargar su historial de incidencias.');
       setTickets([]);
     } finally {
@@ -327,19 +323,14 @@ function UserTicketsHistory({ refreshKey }: { refreshKey: number }) {
   );
 }
 
-// dashboardPage.tsx (Implementación local)
 
-// dashboardPage.tsx (donde se define ProfileSettings)
-
-// 1. Interfaz de Props: Le agregamos la función para redirigir
 interface ProfileSettingsProps { 
     isForced: boolean;
-    onPasswordChangeSuccess: () => void; // 👈 NUEVA PROP
+    onPasswordChangeSuccess: () => void; 
 }
 
 function ProfileSettings({ isForced, onPasswordChangeSuccess }: ProfileSettingsProps) {
-    // 2. OBTENER 'setUser' del contexto
-    const { user, setUser } = useAuth(); // 👈 CAMBIO AQUÍ
+    const { user, setUser } = useAuth(); 
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -347,8 +338,6 @@ function ProfileSettings({ isForced, onPasswordChangeSuccess }: ProfileSettingsP
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
 
-    // Si está forzado, solo devolvemos el div principal (sin datos personales)
-    // para que el usuario solo pueda interactuar con el formulario.
     if (isForced && !user) {
         return <div className="mx-auto max-w-xl p-4">Cargando...</div>;
     }
@@ -378,14 +367,11 @@ function ProfileSettings({ isForced, onPasswordChangeSuccess }: ProfileSettingsP
         setIsLoading(true);
 
         try {
-            // Si es forzado, enviamos una cadena vacía para oldPassword.
             const oldPasswordValue = isForced ? "" : oldPassword; 
 
             await api.put('/auth/password', { oldPassword: oldPasswordValue, newPassword });
             
-            // 👇 LÓGICA CLAVE DE ÉXITO Y REDIRECCIÓN
             if (user) { 
-                // 1. Actualizar el estado del usuario localmente (ya no debe cambiar la clave)
                 const updatedUser = { ...user, mustChangePassword: false };
                 setUser(updatedUser); 
             }
@@ -395,14 +381,12 @@ function ProfileSettings({ isForced, onPasswordChangeSuccess }: ProfileSettingsP
             setNewPassword('');
             setConfirmPassword('');
 
-            // 2. Llamar a la función de redirección después de 1 segundo
             setTimeout(() => {
                 onPasswordChangeSuccess(); 
             }, 5000); 
             
         } catch (err) {
             if (err instanceof Error) {
-                // El error del backend se manejará aquí (ej: "La contraseña actual es incorrecta")
                 setError(err.message);
             } else {
                 setError('Error al actualizar la contraseña. Verifique que su contraseña actual sea correcta.');
@@ -412,11 +396,8 @@ function ProfileSettings({ isForced, onPasswordChangeSuccess }: ProfileSettingsP
         }
     };
 
-    // --------------------------------------------------------------------------------------
-    // CÓDIGO JSX
-    // --------------------------------------------------------------------------------------
-    
-    // Si la clave está forzada, SOLO MOSTRAMOS EL ALERTA Y EL FORMULARIO
+
+    //Si es primera vez que ingresa y debe cambiar la contraseña
     if (isForced) {
         return (
             <div className="mx-auto max-w-xl p-4">
@@ -426,14 +407,12 @@ function ProfileSettings({ isForced, onPasswordChangeSuccess }: ProfileSettingsP
                 </div>
                 
                 <div className="bg-white dark:bg-neutral-800 p-6 rounded-lg shadow-xl space-y-6">
-                    {/* Solo el formulario cuando está forzado */}
                     <div>
                         <h3 className="text-xl font-medium text-neutral-900 dark:text-white mb-4">Cambiar Contraseña</h3>
                         <form onSubmit={handleSubmitPassword} className="space-y-4">
                             {success && <div className="rounded-md bg-green-100 p-3 text-sm text-green-700 dark:bg-green-800 dark:text-green-100">{success}</div>}
                             {error && <div className="rounded-md bg-red-100 p-3 text-sm text-red-700 dark:bg-red-800 dark:text-red-100">{error}</div>}
                             
-                            {/* No se pide la contraseña actual cuando es forzado */}
                             <TEInput type="password" label="Nueva Contraseña" size="lg" value={newPassword} onChange={(e: ChangeEvent<HTMLInputElement>) => setNewPassword(e.target.value)} required />
                             <TEInput type="password" label="Confirmar Nueva Contraseña" size="lg" value={confirmPassword} onChange={(e: ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)} required />
                             
@@ -453,7 +432,6 @@ function ProfileSettings({ isForced, onPasswordChangeSuccess }: ProfileSettingsP
         );
     }
     
-    // SI NO ESTÁ FORZADO, MOSTRAMOS LA VISTA COMPLETA (Datos Personales + Formulario)
     return (
         <div className="mx-auto max-w-xl p-4">
             <h2 className="text-2xl font-semibold mb-6 text-neutral-800 dark:text-neutral-100">Configuración de Perfil</h2>
@@ -502,17 +480,13 @@ export function DashboardPage() {
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
-    // Si mustChangePassword: true
-    // forzamos la vista interna del dashboard a 'perfil' (donde está el cambio de clave)
     if (user && user.mustChangePassword) {
       setView('perfil'); 
     }
   }, [user]);
 
   const handleTicketCreated = () => {
-    // 1. Cuando se crea un ticket con éxito, cambiamos la vista automáticamente a 'historial'.
     setView('historial'); 
-    // 2. Aumentamos 'refreshKey' para forzar a que UserTicketsHistory recargue la lista
     setRefreshKey(prev => prev + 1); 
   };
 
@@ -520,8 +494,6 @@ export function DashboardPage() {
         setView('dashboard');
     };
 
-
-  //Al presionar en sidebar dirige al panel correspondiente
   const renderContent = () => {
     switch (view) {
       case 'dashboard':
@@ -547,14 +519,10 @@ export function DashboardPage() {
               }
   };
 
-  // --- ESTRUCTURA FINAL: LAYOUT CON SIDEBAR ---
+
   return (
     <div className="flex h-screen bg-neutral-100 dark:bg-neutral-900"> 
-      
-      {/* 1. PANEL LATERAL (Sidebar) */}
       <UserSidebar currentView={view} setView={setView} /> 
-
-      {/* 2. CONTENIDO PRINCIPAL */}
       <main className="flex-1 overflow-y-auto p-4 md:p-8">
         {renderContent()}
       </main>

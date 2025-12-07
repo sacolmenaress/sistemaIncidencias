@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-// --- ¡ARREGLO #1: Importar 'Variants' y 'motion'/'AnimatePresence' correctamente ---
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import { X, Edit, Save, XCircle } from 'lucide-react';
 
-// --- ¡ARREGLO #2: Corregir la ruta de importación y usar '.tsx'! ---
-// (Asumiendo que 'components' y 'pages' son hermanos dentro de 'src')
+
 import type { Ticket } from '../pages/dashboardPage.tsx';
 
 interface ModalProps {
@@ -14,11 +12,10 @@ interface ModalProps {
   onUpdate?: (updatedTicket: Partial<Ticket>) => Promise<void>;
 }
 
-// --- ¡ARREGLO #3: Tipar explícitamente las variantes ---
 const backdropVariants: Variants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1 },
-  exit: { opacity: 0 }, // Añadido 'exit' para AnimatePresence
+  exit: { opacity: 0 }, 
 };
 
 const modalVariants: Variants = {
@@ -58,7 +55,7 @@ export function TicketDetailModal({ ticket, onClose, isEditable = false, onUpdat
         priority: editedPriority,
       });
       setIsEditing(false);
-      onClose(); // Close modal after successful save
+      onClose();
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -84,13 +81,13 @@ export function TicketDetailModal({ ticket, onClose, isEditable = false, onUpdat
 
   return (
     <AnimatePresence>
-      {ticket && ( // <-- ¡La animación SÓLO se aplica si el ticket existe!
+      {ticket && ( 
         <motion.div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
           variants={backdropVariants}
           initial="hidden"
           animate="visible"
-          exit="exit" // Usamos el 'exit' definido
+          exit="exit" 
           onClick={onClose}
         >
           <motion.div
@@ -101,7 +98,6 @@ export function TicketDetailModal({ ticket, onClose, isEditable = false, onUpdat
             exit="exit"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Botón de Cerrar */}
             <button
               onClick={onClose}
               className="absolute -top-3 -right-3 rounded-full bg-red-600 p-1 text-white shadow-lg transition hover:scale-110"
@@ -109,9 +105,8 @@ export function TicketDetailModal({ ticket, onClose, isEditable = false, onUpdat
               <X className="h-5 w-5" />
             </button>
 
-            {/* Encabezado del Modal */}
+
             <div className="border-b border-neutral-200 pb-4 dark:border-neutral-700">
-              {/* --- ARREGLO #4: TypeScript ahora sabe qué es 'ticket' --- */}
               <h3 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100">
                 #{ticket.id}: {isEditing ? (
                   <input

@@ -1,5 +1,5 @@
 import { LoginPage } from './pages/loginPage';
-import { DashboardPage } from '../src/pages/dashboardPage'; // ¡Asegúrate de importar!
+import { DashboardPage } from '../src/pages/dashboardPage'; 
 import { useAuth } from '../context/authContext';
 import { AdminDashboardPage } from './pages/adminDashboardPage';
 

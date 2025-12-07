@@ -36,12 +36,10 @@ export function IncidenciaLibraryPage() {
 
     // Filtra las incidencias por título o solución
     const filteredIncidencias = (incidencias || []).filter((incidencia) => {
-        // 1. Si no hay término de búsqueda, mostramos todas las incidencias.
         if (!searchTerm) {
             return true;
         }
 
-        // 2. Normalizamos la búsqueda a minúsculas
         const lowerCaseSearch = searchTerm.toLowerCase();
 
       
@@ -49,7 +47,6 @@ export function IncidenciaLibraryPage() {
         const matchesSolution = incidencia.solution.toLowerCase().includes(lowerCaseSearch);
         const matchesCategory = incidencia.category.toLowerCase().includes(lowerCaseSearch);
 
-        // 4. Retornamos true si coincide con TÍTULO, SOLUCIÓN o CATEGORÍA
         return matchesTitle || matchesSolution || matchesCategory;
     });
 
@@ -81,7 +78,7 @@ export function IncidenciaLibraryPage() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400 dark:text-neutral-500" />
             </div>
 
-            {/* Lista de Incidencias (Acordeón) */}
+            {/* Lista de Incidencias */}
             <div className="space-y-4">
                 {filteredIncidencias.length === 0 ? (
                     <p className="text-center text-neutral-500 dark:text-neutral-400 mt-10">
@@ -102,7 +99,7 @@ export function IncidenciaLibraryPage() {
                                     {isOpen ? <ChevronUp className="w-5 h-5 text-primary-500" /> : <ChevronDown className="w-5 h-5 text-neutral-500" />}
                                 </button>
 
-                                {/* Contenido del Acordeón (Animado) */}
+                                {/* Contenido del Acordeón*/}
                                 <AnimatePresence>
                                     {isOpen && (
                                         <motion.div

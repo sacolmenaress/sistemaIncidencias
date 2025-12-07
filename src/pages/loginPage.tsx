@@ -1,14 +1,16 @@
 import React, { useState, type FormEvent, type ChangeEvent } from "react"; // ¡Tipos añadidos!
 import { TEInput, TERipple } from "tw-elements-react";
 import { useAuth } from "../../context/authContext";
+
+
 export function LoginPage() { 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null); // ¡Tipo añadido!
+  const [error, setError] = useState<string | null>(null); 
 
-  const handleSubmit = async (e: FormEvent) => { // ¡Tipo añadido!
+  const handleSubmit = async (e: FormEvent) => { 
     e.preventDefault(); 
     setIsLoading(true);
     setError(null);
@@ -97,15 +99,18 @@ export function LoginPage() {
                 </div>
 
                 {/* --- Columna derecha (Decorativa) --- */}
-                <div
-                  className="flex items-center justify-center rounded-b-lg lg:w-6/12 lg:rounded-r-lg lg:rounded-bl-none"
-                  style={{
-                    backgroundImage: "url('/images/fondoLogin.png')",
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    backgroundRepeat: "no-repeat",
-                  }}
-                >
+                  <div
+                    className="
+                      flex items-center justify-center 
+                      rounded-b-lg 
+                      lg:w-6/12 
+                      lg:rounded-r-lg 
+                      lg:rounded-bl-none
+                      bg-[url('/images/fondologin.png')] 
+                      bg-cover bg-center bg-no-repeat
+                    "
+                  >
+
                   <div className="flex flex-col items-center">
                     <h1 className="font-serif font-bold italic text-3xl lg:text-4xl text-white drop-shadow-md">
                       Orientados a la excelencia

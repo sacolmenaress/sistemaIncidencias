@@ -36,8 +36,6 @@ export function ManageIncidencias() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
-
-    // States para Form/Modal
     const [formData, setFormData] = useState<Incidencia>(initialIncidenciaState);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const isEditing = formData.ID !== 0;
@@ -46,7 +44,7 @@ export function ManageIncidencias() {
         fetchIncidencias();
     }, []);
 
-    // Función principal para obtener la lista de incidencias para gestión
+
     const fetchIncidencias = useCallback(async () => {
         setIsLoading(true);
         setError(null);
@@ -65,33 +63,29 @@ export function ManageIncidencias() {
         e.preventDefault();
         setIsLoading(true);
         setError(null);
-        setSuccess(null); // Limpiar el éxito anterior
+        setSuccess(null); 
 
         try {
             if (isEditing) {
-                // Lógica de Edición
                 await api.put(`/incidencias/${formData.ID}`, formData);
                 setSuccess('Incidencia actualizada con éxito.');
             } else {
-                // Lógica de Creación
                 await api.post('/incidencias', formData);
                 setSuccess('Incidencia creada con éxito.');
             }
             
-            // ¡ESTO ES LO CRUCIAL! Recarga la lista DESPUÉS de un éxito
+
             fetchIncidencias(); 
             
-            // Limpiar formulario y cerrar modal
+
             setFormData(initialIncidenciaState); 
             setIsModalOpen(false); 
 
         } catch (err: any) {
-            // ... (Tu lógica de error)
             setError(err.response?.data?.error || 'Error al guardar la incidencia.');
         } finally {
             setIsLoading(false);
         }
-    // Dependencias: Incluir fetchIncidencias para que use la versión más reciente
     }, [formData, isEditing, fetchIncidencias, setFormData, setIsModalOpen, setIsLoading, setError, setSuccess]);
 
     // Función para manejar la eliminación de una incidencia
@@ -122,12 +116,10 @@ export function ManageIncidencias() {
     };
 
     const openEditModal = (incidencia: Incidencia) => {
-        // Clonar para evitar mutaciones directas del estado de la lista
         setFormData({...incidencia}); 
         setIsModalOpen(true);
     };
 
-    // Componente del Modal/Formulario
 
     return (
         <div className="p-6">
@@ -176,9 +168,6 @@ export function ManageIncidencias() {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
-                                            {/* VERIFICACIÓN CORREGIDA: 
-                                            Si 'incidencias' no existe O su longitud es 0, y no estamos cargando, muestra el mensaje.
-                                            */}
                                             {(!incidencias || incidencias.length === 0) && !isLoading ? (
                                                 <tr>
                                                     <td colSpan={5} className="px-4 py-4 text-center text-sm text-neutral-500 dark:text-neutral-400">
@@ -186,7 +175,6 @@ export function ManageIncidencias() {
                                                     </td>
                                                 </tr>
                                             ) : (
-                                                // Usamos el operador de encadenamiento opcional (?) para asegurar que map solo se llame si incidencias existe.
                                                 incidencias?.map((incidencia) => (
                                                     <tr key={incidencia.ID} className="hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors">
                                                         <td className="px-4 py-4 whitespace-nowrap text-sm font-semibold text-primary-600 dark:text-primary-400">{incidencia.ID}</td>

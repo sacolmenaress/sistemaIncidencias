@@ -3,21 +3,19 @@ import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import { X } from 'lucide-react';
 import { api } from '../../services/apiCliente'; 
 import { TEInput, TERipple } from 'tw-elements-react';
-
-// Importamos el tipo 'Ticket' que ya exportamos
 import type { Ticket } from '../pages/dashboardPage.tsx'; 
 
 interface ModalProps {
   ticket: Ticket | null;
   onClose: () => void;
-  onUpdate: () => void; // ¡NUEVO! Función para avisar que se actualizó
+  onUpdate: () => void; 
 }
 
-// --- Variantes de animación (igual que en TicketDetailModal) ---
+
 const backdropVariants: Variants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1 },
-  exit: { opacity: 0 }, // Añadido 'exit' para AnimatePresence
+  exit: { opacity: 0 }, 
 };
 
 const modalVariants: Variants = {
@@ -27,12 +25,10 @@ const modalVariants: Variants = {
 };
 
 export function AdminTicketModal({ ticket, onClose, onUpdate }: ModalProps) {
-  // --- ¡NUEVO! Estados para el formulario de edición ---
   const [newStatus, setNewStatus] = useState(ticket?.status || 'abierto');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Efecto para actualizar el estado si el ticket cambia
   useEffect(() => {
     if (ticket) {
       setNewStatus(ticket.status);
@@ -41,21 +37,19 @@ export function AdminTicketModal({ ticket, onClose, onUpdate }: ModalProps) {
 
   if (!ticket) return null;
 
-  // --- ¡NUEVO! Manejador para actualizar el ticket ---
   const handleUpdateTicket = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
 
     try {
-      // Llamamos al endpoint PUT que ya creamos en Go
       await api.put(`/tickets/${ticket.id}`, {
         status: newStatus,
       });
       
       setIsLoading(false);
-      onUpdate(); // Avisa al dashboard que recargue la lista
-      onClose(); // Cierra el modal
+      onUpdate(); 
+      onClose(); 
 
     } catch (err) {
       if (err instanceof Error) {
@@ -105,7 +99,6 @@ export function AdminTicketModal({ ticket, onClose, onUpdate }: ModalProps) {
               <X className="h-5 w-5" />
             </button>
 
-            {/* --- Encabezado (Igual que antes) --- */}
             <div className="border-b border-neutral-200 pb-4 dark:border-neutral-700">
               <h3 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100">
                 #{ticket.id}: {ticket.title}
@@ -119,7 +112,6 @@ export function AdminTicketModal({ ticket, onClose, onUpdate }: ModalProps) {
               </div>
             </div>
 
-            {/* --- Cuerpo (Igual que antes) --- */}
             <div className="mt-4 max-h-[40vh] overflow-y-auto">
               <h4 className="font-semibold text-neutral-800 dark:text-neutral-200">Descripción:</h4>
               <p className="mt-2 whitespace-pre-wrap text-neutral-600 dark:text-neutral-300">
@@ -127,7 +119,6 @@ export function AdminTicketModal({ ticket, onClose, onUpdate }: ModalProps) {
               </p>
             </div>
 
-            {/* --- ¡NUEVO! Formulario de Gestión de Admin --- */}
             <form onSubmit={handleUpdateTicket} className="mt-6 border-t border-neutral-200 pt-6 dark:border-neutral-700">
               <h4 className="text-lg font-semibold text-neutral-800 dark:text-neutral-200">Panel de Gestión</h4>
               

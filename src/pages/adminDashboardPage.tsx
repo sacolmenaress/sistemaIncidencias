@@ -157,8 +157,6 @@ function ManageTickets({ refreshKey }: { refreshKey: number }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
-  
-  // Estados para filtros
   const [statusFilter, setStatusFilter] = useState<'all' | 'abierto' | 'en_proceso' | 'resuelto'>('all');
   const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>('todos');
   const [searchQuery, setSearchQuery] = useState('');
@@ -167,7 +165,6 @@ function ManageTickets({ refreshKey }: { refreshKey: number }) {
     setIsLoading(true);
     setError(null);
     try {
-      // LLAMADA CLAVE: Obtiene TODOS los tickets
       const response = await api.get('/tickets') as { tickets: Ticket[] }; 
       setTickets(response.tickets); 
     } catch (err) {
@@ -195,16 +192,14 @@ function ManageTickets({ refreshKey }: { refreshKey: number }) {
     }
   };
 
-  // --- Lógica de Filtro y Búsqueda (Reportes) ---
+
   const filteredTickets = useMemo(() => {
     let currentTickets = tickets;
 
-    // 1. Filtrar por Estado
     if (statusFilter !== 'all') {
       currentTickets = currentTickets.filter(t => t.status === statusFilter);
     }
 
-    // 2. Filtrar por Búsqueda (Título, ID o Usuario)
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       currentTickets = currentTickets.filter(t => 
@@ -215,7 +210,6 @@ function ManageTickets({ refreshKey }: { refreshKey: number }) {
       );
     }
 
-    //Por prioridad
     if (priorityFilter !== 'todos') {
         currentTickets = currentTickets.filter(t => t.priority === priorityFilter);
     }
@@ -285,10 +279,8 @@ function ManageTickets({ refreshKey }: { refreshKey: number }) {
             </div>
         </div>
       </div>
-      {/* Fin de Controles */}
 
 
-      {/* --- Tabla de Tickets --- */}
       <div className="overflow-x-auto bg-white dark:bg-neutral-800 rounded-lg shadow-xl">
         <table className="min-w-full divide-y divide-neutral-200 dark:divide-neutral-700">
           <thead className="bg-neutral-50 dark:bg-neutral-700">
@@ -302,14 +294,11 @@ function ManageTickets({ refreshKey }: { refreshKey: number }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
-              {filteredTickets.map((ticket) => { // 🚨 CAMBIO DE SINTAXIS: Abrimos con {
-                // Lógica de Notificación (debes tener shouldNotify, Bell y AlertTriangle importados)
+              {filteredTickets.map((ticket) => { 
                 const notificationType = shouldNotify(ticket);
 
                 const NotificationIcon = () => {
                     if (!notificationType) return null;
-
-                    // Asume que Bell y AlertTriangle están importados de 'lucide-react'
                     const Icon = notificationType === 'abierto_viejo' ? Bell : AlertTriangle;
                     const color = notificationType === 'abierto_viejo' ? 'text-red-500' : 'text-yellow-500';
                     const title = notificationType === 'abierto_viejo'
@@ -322,7 +311,7 @@ function ManageTickets({ refreshKey }: { refreshKey: number }) {
                     );
                 };
 
-                return ( // 🚨 Usamos 'return' para devolver el JSX
+                return ( 
                     <tr 
                         key={ticket.id} 
                         className="hover:bg-neutral-50 dark:hover:bg-neutral-700 transition duration-150 cursor-pointer"
@@ -336,7 +325,7 @@ function ManageTickets({ refreshKey }: { refreshKey: number }) {
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                             <span className={`font-semibold ${
                                 ticket.priority === 'alta' ? 'text-red-500' : 
-                                ticket.priority === 'medium' ? 'text-yellow-500' : // Mantenemos 'medium' según tu código original
+                                ticket.priority === 'medium' ? 'text-yellow-500' : 
                                 'text-green-500'
                             }`}>
                                 {ticket.priority.toUpperCase()}
@@ -346,7 +335,6 @@ function ManageTickets({ refreshKey }: { refreshKey: number }) {
                             <span className="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium bg-neutral-100 dark:bg-neutral-600 text-neutral-800 dark:text-neutral-200">
                                 {getStatusIcon(ticket.status)}
                                 <span className="ml-1">{ticket.status.replace('_', ' ').toUpperCase()}</span>
-                                {/* 🚨 ESTE ES EL PUNTO DE INSERCIÓN DENTRO DEL SPAN DE ESTADO */}
                                 <NotificationIcon /> 
                             </span>
                         </td>
@@ -364,11 +352,11 @@ function ManageTickets({ refreshKey }: { refreshKey: number }) {
                     </tr>
                 );
             })}
-          </tbody>
+          </tbody>
         </table>
       </div>
 
-      {/* Modal para Gestión de Tickets */}
+
       <AdminTicketModal
         ticket={selectedTicket}
         onClose={() => setSelectedTicket(null)}
@@ -385,9 +373,8 @@ export interface ProfileSettingsProps {
 }
 
 export function ProfileSettings({ isForced }: ProfileSettingsProps) { 
-  const { logout } = useAuth(); // Necesitas logout si no lo tenías
+  const { logout } = useAuth(); 
   const [oldPassword, setOldPassword] = useState('');
-    // Reutilizando la lógica del dashboardPage para el cambio de contraseña
     const { user } = useAuth();
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -415,7 +402,7 @@ export function ProfileSettings({ isForced }: ProfileSettingsProps) {
       setSuccess(null);
   
       try {
-      await api.put('/auth/password-update', {
+      await api.put('/auth/password', {
         oldPassword: isForced ? '' : oldPassword, 
         newPassword,
       });
@@ -498,16 +485,14 @@ export function AdminDashboardPage() {
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
-    // Si el usuario DEBE cambiar la clave, forzamos la vista a 'perfil'
     if (user && user.mustChangePassword) {
       setView('perfil');
     }
-  }, [user]); // Dependencia clave: se ejecuta cuando el usuario cambia
+  }, [user]); 
 
   const renderContent = () => {
     switch (view) {
       case 'reportes_y_control':
-        // La clave de refresco es vital para forzar la recarga de la lista
         return <ManageTickets refreshKey={refreshKey} />; 
       
       case 'manage_users':
@@ -523,10 +508,7 @@ export function AdminDashboardPage() {
 
   return (
     <div className="flex h-screen bg-neutral-100 dark:bg-neutral-900">
-      {/* --- 1. PANEL LATERAL (Sidebar) --- */}
       <AdminSidebar currentView={view} setView={setView} user={user} />
-
-      {/* --- 2. CONTENIDO PRINCIPAL --- */}
       <main className="flex-1 overflow-y-auto p-4 md:p-8">
         {renderContent()}
       </main>
