@@ -1,16 +1,51 @@
-# React + Vite
+# Guía de Instalación y Ejecución - Sistema de Incidencias
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Esta guía describe paso a paso cómo instalar las dependencias y ejecutar el proyecto.
 
-Currently, two official plugins are available:
+## Requisitos Previos
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Asegúrate de tener instalados los siguientes programas:
+- [Node.js](https://nodejs.org/) (Versión 18 o superior recomendada)
+- Git
 
-## React Compiler
+## 1. Configuración del Frontend (React + Vite)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+El frontend se encuentra en la carpeta principal `sistemaIncidencias`.
 
-## Expanding the ESLint configuration
+### Paso 1: Instalar dependencias
+Abre una terminal en la carpeta raíz del proyecto y ejecuta:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm install
+```
+
+Este comando descargará e instalará todas las librerías necesarias listadas en `package.json` (React, Tailwind, Framer Motion, etc.).
+
+### Paso 2: Ejecutar el servidor de desarrollo
+Para iniciar la aplicación, ejecuta:
+
+```bash
+npm run dev
+```
+
+La aplicación estará disponible usualmente en [http://localhost:5173](http://localhost:5173).
+
+## 2. Configuración del Backend
+
+**Nota Importante:** El código del backend (servidor Go) se encuentra en otro repositorio, el cual es necesario instalar
+
+El frontend está configurado para comunicarse con el backend en el puerto **8000** (ver `vite.config.js`).
+
+### Pasos para el Backend:
+1.  Navega a la carpeta donde tengas el código del servidor (Go).
+2.  Asegúrate de tener [Go](https://go.dev/) instalado.
+3.  Ejecuta el servidor:
+    ```bash
+    go run .
+    ```
+4.  Verifica que el backend esté corriendo en `http://localhost:8000`.
+
+## Solución de Problemas
+
+- **Error de conexión (API):** Si la aplicación carga pero no muestra datos, verifica que el backend esté corriendo en el puerto 8000.
+- **Error en `npm install`:** Borra la carpeta `node_modules` y el archivo `package-lock.json`, e intenta ejecutar `npm install` nuevamente.
